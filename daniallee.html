@@ -235,7 +235,7 @@
                 videoContainer.innerHTML = `<video controls autoplay muted loop playsinline style="width:100%; display:block;"><source src="selfie.mp4" type="video/mp4"></video>`;
                 chatWindow.appendChild(videoContainer);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-                document.getElementById('k8-guide').innerText = "Look at the video! The background is blurry. It's a Deepfake!";
+                document.getElementById('k8-guide').innerText = "Look at the video! The background is blurry and his mouth moves weirdly. It's a Deepfake!";
                 setTimeout(() => {
                   document.getElementById('choice-bar').style.display = 'flex';
                   document.getElementById('chat-view').style.filter = 'blur(5px)';
