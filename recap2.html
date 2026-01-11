@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <title>Intro2</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 960px;
+            height: 540px;
+            overflow: hidden;
+        }
+        #game {
+            width: 960px;
+            height: 540px;
+            background: rgb(1, 43, 79);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            padding-top: 30px;
+            justify-content: center;   
+            align-items: flex-start;   
+        }
+        .card-title {
+            background: #ffffff;
+            position: absolute;
+            top: -30px;
+            left: 0px;
+            padding: 10px 18px;
+            clip-path: polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%,0 14px);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.35);
+            height: 30px;
+            width: 200px;
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 30px;
+            letter-spacing: 2px;
+            color: #012b4f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 11px;
+        }
+        .card {
+            background: rgba(183, 191, 243, 0.08);
+            display: flex;
+            position: relative;
+            padding: 30px;
+            box-sizing: border-box;
+            margin-top: 50px;
+            border-radius: 0; 
+            box-shadow: 0 0 12px rgba(110, 203, 255, 0.35);
+        }
+        .card-shape {
+            width: 800px;
+            height:300px;
+            background: rgba(183, 191, 243, 0.08);
+            padding:30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px);
+            box-shadow: 0 0 12px rgba(110, 203, 255, 0.35);
+        }
+        h2 {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-top: -5px;
+            color: #cfe6ff;
+            opacity: 0.95;
+            margin-bottom: 12px;
+        }
+        p {
+            margin: 0 0 16px 0;
+            opacity: 0.95;
+            line-height: 1.55;
+            max-width: 680px;
+            font-family:"Oswald", sans-serif;
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: #ffffff;
+            font-weight: 400;
+        }
+        .nxt-btn {
+            background: #ffffff;
+            position: absolute;
+            bottom: -70px;
+            right: 0px;
+            padding: 10px 18px;
+            clip-path: polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%,0 14px);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.35);
+            height: 30px;
+            width: 100px;
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: #012b4f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 11px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: box-shadow 0.25s ease, transform 0.15s ease;
+        }
+        .nxt-btn:hover {
+            background: #cfe6ff;
+            box-shadow: 0 0 12px rgba(160,210,255,0.6), 0 0 24px rgba(219, 236, 252, 0.4);
+            transform: translateY(-2px);
+        }
+        @keyframes sentenceFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .reveal-text {
+            opacity: 0;
+            animation: sentenceFade 0.8s ease-out forwards;
+        }
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 1.5s; }
+        .delay-3 { animation-delay: 2.5s; }
+        .delay-4 { animation-delay: 3.5s; }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div class="card">
+            <div class="card-title">GAME RECAP</div>   
+            <a class="nxt-btn" href="recap3.html">NEXT PAGE > </a>
+            <div class="card-shape">
+                <h2 class="reveal-text delay-1">HOW TO SPOT AI SCAMS!</h2>
+                <p class="reveal-text delay-2">3. AI is inaccurate and inconsistent. AI can tell you the wrong facts and also contradict it's own point.</p>
+                <p class="reveal-text delay-3">4. AI has bad grammar, punctuation and spelling. Thus, the Chatgpt dash (—) can be a huge hint.</p>
+                <p class="reveal-text delay-4">5. AI has no emotions or feelings, they can't react to anything you say with emotions!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

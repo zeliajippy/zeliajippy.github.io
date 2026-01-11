@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    body {
+        opacity: 0;
+        animation: universalFadeIn 0.8s ease-in-out forwards;
+    }
+    @keyframes universalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    body {
+      margin: 0;
+      background: #d8e8f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+    #game-container {
+      width: 960px;
+      height: 540px; 
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden; 
+    }
+    #profile-display {
+      height: 380px; 
+      width: 100%;
+      background-size: cover; 
+      background-repeat: no-repeat;
+      background-position: center top; 
+      background-color: white;
+      z-index: 1;
+    }
+    .k8-bar {
+      height: 160px; 
+      background: #012b4f; 
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 40px;
+      position: relative;
+      z-index: 5;
+    }
+    .k8-container {
+      position: absolute;
+      left: 250px; 
+      bottom: -30px; 
+      width: 800px; 
+      pointer-events: none;
+    }
+    .k8-img {
+      width: 100%;
+      height: auto;
+      animation: float 4s ease-in-out infinite;
+    }
+    .speech-bubble {
+      background: white;
+      border: 3px solid #012b4f;
+      padding: 15px 25px;
+      border-radius: 20px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 18px; 
+      font-weight: bold;
+      position: relative;
+      width: 400px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 10;
+      left: -30px;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: -15px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 12px 15px 12px 0;
+      border-style: solid;
+      border-color: transparent white transparent transparent;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .message-link {
+      position: absolute;
+      display: block;
+      top: 250px; 
+      left: 595px;
+      width: 235px;
+      height: 100px;
+      cursor: pointer;
+      z-index: 10;
+      background-color: rgba(255,0,0,0); 
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="profile-display">
+        <a id="send-message-btn" class="message-link"></a>
+    </div>
+    <div class="k8-bar">
+      <div class="k8-container">
+        <img src="straight k8.png" class="k8-img" alt="K8">
+      </div>
+      <div class="speech-bubble" id="k8-message">Checking out this profile...</div>
+    </div>
+  </div>
+  <script>
+    const profileImages = {
+      'daniallee': '1.png', 
+      'markangelo': '2.png', 
+      'rachel': '3.png', 
+      'whatshappeningah': '4.png', 
+      'jonathongohwhere': '5.png' 
+    };
+    const profileMessages = {
+      'daniallee': ["Let's check out Daniel's profile...", "He says he'll follow back? That's nice.", "Hmm let's send him a message!"],
+      'markangelo': ["This is Mark's profile...", "Wow, he has quite a lot of hobbies listed.", "No harm sending a message right?"],
+      'rachel': ["Let's look at Rachel's profile...", "She loves tennis and dogs!", "Seems like a very active person, let's message her!"],
+      'whatshappeningah': ["OMG is that nailong?", "But their bio is completely empty...", "Let's message him to get to know him better!"],
+      'jonathongohwhere': ["Here is Jonathon's page...", "His life motto is just 'to eat'.", "But he has no profile picture? Let's text him instead!"]
+    };
+    const messagePages = {
+      'daniallee': 'daniallee.html',
+      'markangelo': 'markangelo.html',
+      'rachel': 'rachel.html',
+      'whatshappeningah': 'whatshappeningah.html',
+      'jonathongohwhere': 'jonathongohwhere.html'
+    };
+    const params = new URLSearchParams(window.location.search);
+    const userKey = params.get('user');
+    const display = document.getElementById('profile-display');
+    const messageBox = document.getElementById('k8-message');
+    const messageBtn = document.getElementById('send-message-btn');
+    if (profileImages[userKey]) {
+      display.style.backgroundImage = "url('" + profileImages[userKey] + "')";
+    }
+    if (messagePages[userKey]) {
+      messageBtn.href = messagePages[userKey];
+    }
+    if (profileMessages[userKey]) {
+      const msgs = profileMessages[userKey];
+      messageBox.innerText = msgs[0];
+      setTimeout(() => { messageBox.innerText = msgs[1]; }, 2500); 
+      setTimeout(() => { messageBox.innerText = msgs[2]; }, 5500); 
+    }
+  </script>
+</body>
+</html>

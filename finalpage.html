@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <title>Intro3</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 960px;
+            height: 540px;
+            overflow: hidden;
+            opacity: 0;
+            animation: universalFadeIn 0.8s ease-in-out forwards;
+        }
+
+        @keyframes universalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #game {
+            width: 960px;
+            height: 540px;
+            background: rgb(1, 43, 79);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            padding-top: 30px;
+            justify-content: center;   
+            align-items: flex-start;   
+        }
+
+        .card {
+            background: rgba(183, 191, 243, 0.08);
+            display: flex;
+            position: relative;
+            padding: 30px;
+            box-sizing: border-box;
+            margin-top: 50px;
+            border-radius: 0; 
+            box-shadow: 0 0 12px rgba(110, 203, 255, 0.35);
+            align-items: center;
+            overflow: visible;
+        }
+
+        .card-shape {
+            width: 800px;
+            height:300px;
+            background: rgba(183, 191, 243, 0.08);
+            padding:30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px);
+            box-shadow: 0 0 12px rgba(110, 203, 255, 0.35);
+        }
+
+        h2 {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 25px;
+            letter-spacing: 2px;
+            margin: 0 0 18px;
+            color: #cfe6ff;
+        }
+
+        .divider {
+            width: 280px;
+            height: 3px;
+            background: rgba(255,255,255,0.25);
+            margin: 30px 0;
+        }
+
+        p {
+            margin: 0 0 16px 0;
+            opacity: 0.95;
+            line-height: 1.55;
+            max-width: 680px;
+            font-family:"Bebas Neue", sans-serif;
+            font-size: 28px;
+            letter-spacing: 1px;
+            color: #ffffff;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        @keyframes sentenceFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal-text {
+            opacity: 0;
+            animation: sentenceFade 0.8s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 1.5s; }
+        .delay-3 { animation-delay: 2.5s; }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div class="card"> 
+            <div class="card-shape">
+                <h2 class="reveal-text delay-1">
+                    CAN YOU TELL AI AND REALITY APART NOW? BE CAREFUL ONLINE!
+                </h2>
+                <div class="divider reveal-text delay-2"></div>
+                <p class="reveal-text delay-3">
+                    THANKS FOR PLAYING
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

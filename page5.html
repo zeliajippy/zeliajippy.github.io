@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Profile</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&family=Oswald:wght@300&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #d8e8f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Inter', sans-serif;
+    }
+
+    #game-container {
+      width: 960px;
+      height: 540px;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+    }
+
+    .header-box {
+      width: 350px;
+      height: 60px;
+      background: #012b4f;
+      color: white;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 0 0 10px 10px;
+      z-index: 10;
+    }
+
+    .setup-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px;
+      border-right: 1px solid #eee;
+    }
+
+    .profile-pic-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin-bottom: 20px;
+    }
+
+    #profile-preview {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #012b4f;
+      background: #f0f0f0;
+      top: 30px;
+      margin-top: -40px;
+    }
+
+    .upload-label {
+      font-family: 'Oswald', sans-serif;
+      color: #012b4f;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 10px;
+      display: block;
+      text-align: center;
+    }
+
+    input[type="file"] { display: none; }
+
+    .input-group {
+      width: 80%;
+      margin-bottom: 15px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #012b4f;
+      border-radius: 25px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 16px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      border-radius: 15px;
+      height: 80px;
+      resize: none;
+    }
+
+    .setup-right {
+      flex: 1;
+      background: rgb(2, 76, 141);
+      position: relative; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .k8 {
+      position: absolute;
+      bottom: 40px;      
+      right: -700px;       
+      width: 1000px;      
+      height: auto;
+      z-index: 10;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .speech-bubble {
+      position: absolute;
+      bottom: 300px;     
+      right: 120px;      
+      background: white;
+      border: 2px solid #012b4f;
+      padding: 15px;
+      border-radius: 15px;
+      width: 180px;      
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
+      z-index: 20;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      right: 30px;       
+      border-width: 12px 12px 0;
+      border-style: solid;
+      border-color: #012b4f transparent;
+    }
+
+    .create-btn {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #012b4f;
+      color: white;
+      padding: 12px 40px;
+      border-radius: 30px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .create-btn:hover {
+      background: #02437a;
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    
+    #notif-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+    }
+    .notif-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      border: 3px solid #012b4f;
+      font-family: 'Bebas Neue', sans-serif;
+      animation: pop 0.3s ease-out;
+    }
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <div class="setup-left">
+      <div class="profile-pic-container">
+        <img id="profile-preview" src="profile-icon-user-profile-username-icon-free-vector.jpg" alt="Profile Preview">
+        <label for="file-upload" class="upload-label">UPLOAD PHOTO</label>
+        <input type="file" id="file-upload" accept="image/*">
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="username" placeholder="@ username">
+      </div>
+
+      <div class="input-group">
+        <textarea id="bio" placeholder="Bio: Tell us about yourself..."></textarea>
+      </div>
+    </div>
+
+    <div class="setup-right">
+      <div class="speech-bubble">
+        Let's first setup your profile! Pick a cool pic and username!
+      </div>
+      <img src="straight k8.png" class="k8" alt="K8">
+    </div>
+
+    <button class="create-btn" onclick="finishProfile()">CREATE PROFILE</button>
+
+    <div id="notif-overlay">
+      <div class="notif-box">
+        <h2 style="margin:0; font-size: 30px; color: #012b4f;">ACCOUNT CREATED!</h2>
+        <p style="font-family: 'Roboto Mono'; margin-top: 10px;">Setting up your feed...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('file-upload');
+    const preview = document.getElementById('profile-preview');
+
+    fileInput.onchange = evt => {
+      const [file] = fileInput.files;
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+      }
+    }
+
+    function finishProfile() {
+      const name = document.getElementById('username').value;
+      if(name === "") {
+        alert("Please enter a username!");
+        return;
+      }
+      
+      localStorage.setItem('playerName', name);
+      
+      
+      document.getElementById('notif-overlay').style.display = 'flex';
+      
+      
+      setTimeout(() => {
+        window.location.href = "page6.html";
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    body {
+        opacity: 0;
+        animation: universalFadeIn 0.8s ease-in-out forwards;
+    }
+    @keyframes universalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    body { margin: 0; background: #d8e8f9; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Inter', sans-serif; overflow: hidden; }
+    #game-container { width: 960px; height: 540px; background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden; display: flex; }
+    #chat-view, #profile-view, #zoom-view { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+    #profile-view { display: none; flex-direction: column; z-index: 50; background-image: url('2.png'); background-size: cover; background-position: center; }
+    #zoom-view { display: none; flex-direction: column; z-index: 60; background-image: url('markangelo.png'); background-size: cover; background-position: center; background-color: black; cursor: none; }
+    #custom-cursor { width: 60px; height: 60px; border: 3px solid #0084ff; border-radius: 50%; position: absolute; pointer-events: none; z-index: 1000; transform: translate(-50%, -50%); display: none; box-shadow: 0 0 15px rgba(0, 132, 255, 0.4); }
+    #chat-view { display: flex; width: 100%; }
+    .chat-main { flex: 1.5; display: flex; flex-direction: column; border-right: 1px solid #ddd; background: white; z-index: 2; position: relative; }
+    .chat-header { height: 70px; border-bottom: 1px solid #ddd; display: flex; align-items: center; padding: 0 20px; background: white; justify-content: space-between; }
+    .profile-header-img { height: 50px; width: auto; }
+    .profile-overlay-btn { background: #0084ff; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; }
+    .chat-window { flex: 1; background: #f9f9f9; padding: 20px; overflow-y: scroll; display: flex; flex-direction: column; gap: 15px; height: 410px; }
+    .message { max-width: 60%; padding: 12px 16px; border-radius: 18px; font-size: 15px; flex-shrink: 0; line-height: 1.4; }
+    .received { background: #e4e6eb; align-self: flex-start; color: #050505; }
+    .sent { background: #0084ff; color: white; align-self: flex-end; }
+    .chat-input-bar { height: 60px; border-top: 1px solid #ddd; display: flex; align-items: center; padding: 0 15px; gap: 10px; }
+    .input-field { flex: 1; background: #f0f2f5; border: none; padding: 10px 15px; border-radius: 20px; outline: none; }
+    .send-btn { color: #0084ff; font-weight: bold; cursor: pointer; }
+    .k8-side { flex: 1; background: #012b4f; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    .k8-container { position: absolute; width: 800px; pointer-events: none; z-index: 5; right: -530px; top: 50%; transform: translateY(-50%); }
+    .k8-img { width: 100%; height: auto; animation: float 4s ease-in-out infinite; }
+    .speech-bubble { background: white; border: 3px solid #012b4f; padding: 15px; border-radius: 15px; font-family: 'Roboto Mono', monospace; z-index: 10; }
+    #chat-view .speech-bubble { position: absolute; top: 25%; right: 70px; width: 180px; font-size: 14px; }
+    .k8-bar { position: absolute; bottom: 0; width: 100%; height: 160px; background: rgba(1, 43, 79, 0.95); display: flex; align-items: center; justify-content: flex-end; padding: 0 40px; z-index: 5; }
+    .back-btn { position: absolute; top: 20px; left: 20px; background: #0084ff; color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; z-index: 110; border: none; }
+    #profile-view .k8-container, #zoom-view .k8-container { left: 250px; bottom: -30px; top: auto; transform: none; }
+    #profile-view .speech-bubble, #zoom-view .speech-bubble { position: relative; width: 420px; font-size: 18px; font-weight: bold; left: -100px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    .bio-click-area { position: absolute; top: 150px; left: 300px; width: 400px; height: 150px; cursor: zoom-in; z-index: 200; background: rgba(255, 0, 0, 0); }
+    .hotspot { position: absolute; z-index: 100; cursor: none; background: rgba(255, 0, 0, 0); }
+    .hyphen-spot { top: 210px; left: 215px; width: 40px; height: 40px; }
+    .hobbies-spot { top: 200px; left: 350px; width: 200px; height: 80px; }
+    #notification { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); background: #4CAF50; color: white; padding: 12px 25px; border-radius: 50px; font-weight: bold; z-index: 2000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    #choice-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background: black; display: none; z-index: 4000; }
+    .choice-side { flex: 1; display: flex; align-items: center; justify-content: center; color: white; text-transform: uppercase; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; }
+    #left-choice { border-right: 1px solid rgba(255, 255, 255, 0.3); height: 40px; margin-top: 15px; }
+    #right-choice { height: 40px; margin-top: 15px; }
+    .game-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 20px; text-align: center; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; z-index: 5000; }
+    .modal-btn-blue { background: #0084ff; color: white; border: none; padding: 12px 0; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+    .modal-btn-green { background: #7ed321; color: white; border: none; padding: 12px 0; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+    .blur-effect { filter: blur(5px); pointer-events: none; transition: filter 0.3s ease; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  </style>
+</head>
+<body>
+  <div id="popup-warn" class="game-modal">
+    <p>🤖 Are sure? You are going a get scammed! Choose again</p>
+    <button class="modal-btn-blue" onclick="closePopups()">TRY AGAIN</button>
+  </div>
+  <div id="popup-success" class="game-modal">
+    <p>🤖👍 Good Job! You avoided a scam. 😊</p>
+    <button class="modal-btn-green" onclick="finishMarkLevel()">BACK TO ACCOUNTS</button>
+</div>
+  <div id="game-container">
+    <div id="custom-cursor"></div> 
+    <div id="chat-view">
+      <div class="chat-main">
+        <div class="chat-header">
+          <img src="12.png" class="profile-header-img">
+          <button class="profile-overlay-btn" onclick="showProfile()">Check Profile</button>
+        </div>
+        <div class="chat-window" id="chat-window">
+          <div class="message received">Hey!</div>
+          <div class="message received">I'm looking for new friends — let's get to know each other!</div>
+        </div>
+        <div class="chat-input-bar">
+          <input type="text" id="user-input" class="input-field" placeholder="Type a message...">
+          <div class="send-btn" onclick="sendMessage()">Send</div>
+        </div>
+      </div>
+      <div class="k8-side">
+        <div class="speech-bubble" id="k8-guide">Start by saying hi! Keep it friendly.</div>
+        <div class="k8-container"><img src="straight k8.png" class="k8-img"></div>
+      </div>
+    </div>
+    <div id="profile-view">
+      <button class="back-btn" onclick="showChat()">← Back to Chat</button>
+      <div class="bio-click-area" onclick="showZoom()"></div>
+      <div class="k8-bar">
+        <div class="k8-container"><img src="straight k8.png" class="k8-img"></div>
+        <div class="speech-bubble" id="profile-k8-text">Does this person seem trustworthy to you?</div>
+      </div>
+    </div>
+    <div id="zoom-view">
+      <div id="notification">Good Job!</div>
+      <button class="back-btn" onclick="showProfile()">← Back to Profile</button>
+      <div class="hotspot hyphen-spot" onclick="checkClue('hyphen')"></div>
+      <div class="hotspot hobbies-spot" onclick="checkClue('hobbies')"></div>
+      <div class="k8-bar">
+        <div class="k8-container"><img src="straight k8.png" class="k8-img"></div>
+        <div class="speech-bubble" id="zoom-bubble">Look closely. Can you spot 2 things that make this bio seem AI generated?</div>
+      </div>
+    </div>
+    <div id="choice-bar">
+      <div id="left-choice" class="choice-side" onclick="triggerDecision('continue')">CONTINUE TALKING</div>
+      <div id="right-choice" class="choice-side" onclick="triggerDecision('block')">BLOCK</div>
+    </div>
+  </div>
+<script>
+    function finishMarkLevel() {
+    localStorage.setItem('markangelo_status', 'blocked'); 
+    window.location.href = 'page6.html'; 
+}
+  const chatWindow = document.getElementById('chat-window');
+  const userInput = document.getElementById('user-input');
+  const k8Guide = document.getElementById('k8-guide');
+  const profileK8Text = document.getElementById('profile-k8-text');
+  const cursor = document.getElementById('custom-cursor');
+  const container = document.getElementById('game-container');
+  let messageCount = 0;
+  let investigationComplete = false;
+  let hyphenFound = false;
+  let hobbiesFound = false;
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    cursor.style.left = (e.clientX - rect.left) + 'px';
+    cursor.style.top = (e.clientY - rect.top) + 'px';
+  });
+  function triggerDecision(type) { 
+    document.getElementById('game-container').classList.add('blur-effect');
+    if (type === 'continue') { document.getElementById('popup-warn').style.display = 'block'; } 
+    else { document.getElementById('popup-success').style.display = 'block'; } 
+  }
+  function closePopups() { 
+    document.getElementById('game-container').classList.remove('blur-effect');
+    document.getElementById('popup-warn').style.display = 'none'; 
+    document.getElementById('popup-success').style.display = 'none'; 
+  }
+  function checkClue(clue) {
+    if (clue === 'hyphen' && !hyphenFound) { hyphenFound = true; triggerSuccess("Good eye! That's the weird chatgpt hyphen."); } 
+    else if (clue === 'hobbies' && !hobbiesFound) { hobbiesFound = true; triggerSuccess("Correct! Nobody says 'Background Tasks' but AI."); }
+    if (hyphenFound && hobbiesFound) { 
+      investigationComplete = true; 
+      document.getElementById('zoom-bubble').innerText = "Excellent! You found the proof. This is AI generated!"; 
+    }
+  }
+  function triggerSuccess(msg) {
+    const notify = document.getElementById('notification');
+    if (notify) { notify.innerText = msg; notify.style.display = 'block'; setTimeout(() => { notify.style.display = 'none'; }, 3000); }
+  }
+  function showProfile() {
+    hideAll();
+    document.getElementById('profile-view').style.display = 'flex';
+    if (investigationComplete) { profileK8Text.innerText = "Now let's continue the chat to spot more clues and call him out!"; } 
+    else if (messageCount >= 1) { profileK8Text.innerText = "Something is weird, let's click into his bio."; }
+  }
+  function showChat() {
+    hideAll();
+    document.getElementById('chat-view').style.display = 'flex';
+    if (investigationComplete) { k8Guide.innerText = "Ask him what are his favourite things!"; } 
+  }
+  function showZoom() { hideAll(); document.getElementById('zoom-view').style.display = 'flex'; cursor.style.display = 'block'; }
+  function hideAll() { document.getElementById('chat-view').style.display = 'none'; document.getElementById('profile-view').style.display = 'none'; document.getElementById('zoom-view').style.display = 'none'; cursor.style.display = 'none'; }
+  function sendMessage() {
+    const text = userInput.value.trim();
+    if (text !== "") {
+      const msg = document.createElement('div');
+      msg.className = 'message sent';
+      msg.innerText = text;
+      chatWindow.appendChild(msg);
+      userInput.value = "";
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      setTimeout(() => {
+        const reply = document.createElement('div');
+        reply.className = 'message received';
+        if (messageCount === 0) {
+          reply.innerText = "My name is Mark, born in Singapore — Lion City!";
+          k8Guide.innerText = "He is so weird, why is there a dash after everything... check his profile...";
+        } else if (messageCount === 1) {
+          reply.innerText = "My favourite things are: Colour — Blue. Food — Laksa. Game — Monopoly";
+          k8Guide.innerText = "The chatgpt dashes again??!!";
+          if (investigationComplete) {
+            setTimeout(() => {
+              document.querySelector('.chat-input-bar').style.display = 'none';
+              document.getElementById('choice-bar').style.display = 'flex';
+              document.getElementById('chat-view').classList.add('blur-effect');
+            }, 3000); 
+          }
+        }
+        chatWindow.appendChild(reply);
+        messageCount++;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }, 1500);
+    }
+  }
+  userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+</script>
+</body>
+</html>

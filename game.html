@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet"> 
+
+  <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+
+    #game {
+      width: 960px;
+      height: 540px;
+      background: rgb(1, 43, 79);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      padding-top: 30px;
+      justify-content: center;   
+      align-items: flex-start;   
+      
+      
+
+    }
+    #title-group {
+        display: flex;              
+        flex-direction: column;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+    #hero-img {
+         margin-top: 24px;
+         width: 220px;       
+         max-width: 100%;
+         opacity: 0.9;
+         display: block; 
+    }
+
+   @keyframes glitch {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+@keyframes colorFlicker {
+  0%   { color: #ffffff; }
+  25%  { color: #9fd8ff; }
+  50%  { color: #ffffff; }
+  75%  { color: #c7ecff; }
+  100% { color: #ffffff; }
+}
+
+   h1 {
+      align-items: center;
+      top: 40px;
+      left: 24px;
+      margin: 0;
+      color: #ffffff;
+      font-family: "Bebas Neue", sans-serif;
+      font-weight: 600;
+      font-size: 80px;
+      letter-spacing: 1px;
+       color: #ffffff;
+       text-shadow:
+       0 0 2px #ffffff,
+       0 0 6px #185c84,
+       0 0 12px #00314e;
+
+      animation: glitch 0.5s linear 2, colorFlicker 2.5s linear infinite;
+
+      
+    }
+    h2 {
+      margin: 4px;
+      color: #ffffff;
+      font-family: "Oswald", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 300;
+      font-style: normal;
+      text-align: center;
+      align-items: center;
+    
+    }
+    #start-btn {
+        margin-top:10px;
+        padding:14px 40px;
+        background-color: cornflowerblue;
+        border: none;
+        border-color: #ffffff;
+
+        border-radius: 999px;
+        font-family: "Bebas Neue", sans-serif;
+        color: #ffffff;
+        font-size: 25px;
+        font-weight: 400;
+        letter-spacing: 1px;
+        text-decoration: none;
+
+
+        cursor: pointer;
+        
+}
+
+    #start-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+
+    }
+
+   
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="title-group">
+        <h1>BEHIND THE TEXT</h1>
+        <h2>[ An Interactive Story ]</h2>
+        <img id="hero-img" src="profile icon.png"/>
+        <a href="page1.html" id="start-btn">START</a>
+
+
+    </div>
+  </div>
+</body>
+</html>

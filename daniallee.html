@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Game - AI Detective</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+        opacity: 0;
+        animation: universalFadeIn 0.8s ease-in-out forwards;
+    }
+    @keyframes universalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    body { margin: 0; background: #d8e8f9; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Inter', sans-serif; overflow: hidden; }
+    #game-container { width: 960px; height: 540px; background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+    #chat-view, #profile-view, #zoom-view { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+    #profile-view, #zoom-view { display: none; flex-direction: column; z-index: 50; }
+    #custom-cursor {
+      width: 60px; height: 60px; border: 3px solid #0084ff; border-radius: 50%;
+      position: absolute; pointer-events: none; z-index: 1000;
+      transform: translate(-50%, -50%); display: none; box-shadow: 0 0 15px rgba(0, 132, 255, 0.4);
+    }
+    #notification {
+      position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+      background: #4CAF50; color: white; padding: 12px 25px; border-radius: 50px;
+      font-weight: bold; z-index: 2000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    #hint-trigger {
+      position: absolute; right: 20px; top: 20px; background: #ff9800; color: white;
+      border: none; padding: 12px 20px; border-radius: 25px; font-weight: bold;
+      cursor: pointer; z-index: 120; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    #hint-panel {
+      position: absolute; right: 20px; top: 20px; width: 220px; background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #012b4f; border-radius: 15px; padding: 15px; z-index: 110;
+      display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    #hint-list { list-style: none; padding: 0; font-size: 14px; }
+    .hint-done { text-decoration: line-through; color: #4CAF50; font-weight: bold; }
+    #chat-view { display: flex; }
+    .chat-main { flex: 1.5; display: flex; flex-direction: column; border-right: 1px solid #ddd; background: white; z-index: 2; }
+    .chat-header { height: 70px; border-bottom: 1px solid #ddd; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+    .profile-header-img { height: 50px; width: auto; }
+    .profile-overlay-btn { background: #0084ff; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; }
+    .k8-side { flex: 1; background: #012b4f; position: relative; overflow: hidden; }
+    #profile-view { background-image: url('1.png'); background-size: cover; background-position: center; }
+    .pfp-click-area { position: absolute; top: 20px; left: 20px; width: 300px; height: 300px; cursor: zoom-in; z-index: 60; background: rgba(255,255,255,0); }
+    #zoom-view { background-image: url('danial.png'); background-size: cover; background-position: center; background-color: black; cursor: none; }
+    .hotspot { position: absolute; background: rgba(255,0,0,0); z-index: 100; cursor: none; }
+    .eye-spot { top: 120px; left: 320px; width: 320px; height: 80px; }
+    .hair-spot { top: 0px; left: 250px; width: 460px; height: 130px; }
+    .k8-container { position: absolute; width: 800px; pointer-events: none; z-index: 5; }
+    .k8-img { width: 100%; height: auto; animation: float 4s ease-in-out infinite; }
+    #chat-view .k8-container { right: -530px; top: 50%; transform: translateY(-50%); bottom: auto; }
+    #profile-view .k8-container, #zoom-view .k8-container { left: 250px; bottom: -30px; top: auto; transform: none; }
+    .speech-bubble { background: white; border: 3px solid #012b4f; padding: 15px; border-radius: 15px; font-family: 'Roboto Mono', monospace; z-index: 10; }
+    #chat-view .speech-bubble { position: absolute; top: 25%; right: 70px; width: 180px; font-size: 14px; }
+    #profile-view .speech-bubble, #zoom-view .speech-bubble { position: relative; width: 420px; font-size: 18px; font-weight: bold; left: -100px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    #profile-view .speech-bubble::after, #zoom-view .speech-bubble::after { content: ''; position: absolute; left: -15px; top: 50%; transform: translateY(-50%); border-width: 12px 15px 12px 0; border-style: solid; border-color: transparent white transparent transparent; }
+    .k8-bar { position: absolute; bottom: 0; width: 100%; height: 160px; background: rgba(1, 43, 79, 0.95); display: flex; align-items: center; justify-content: flex-end; padding: 0 40px; z-index: 5; }
+    .back-btn { position: absolute; top: 20px; left: 20px; background: #0084ff; color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; z-index: 110; border: none; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .chat-window { flex: 1; background: #f9f9f9; padding: 20px; overflow-y: scroll; display: flex; flex-direction: column; gap: 15px; height: 410px; }
+    .message { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 15px; flex-shrink: 0; }
+    .received { background: #e4e6eb; align-self: flex-start; }
+    .sent { background: #0084ff; color: white; align-self: flex-end; }
+    .chat-input-bar { height: 60px; border-top: 1px solid #ddd; display: flex; align-items: center; padding: 0 15px; gap: 10px; }
+    .input-field { flex: 1; background: #f0f2f5; border: none; padding: 10px 15px; border-radius: 20px; outline: none; }
+    .video-message { max-width: 250px; border-radius: 18px; overflow: hidden; background: #e4e6eb; align-self: flex-start; margin-top: 5px; display: block; flex-shrink: 0; }
+    .video-message video { width: 100%; display: block; }
+    #choice-bar { position: absolute; bottom: 0; width: 100%; height: 70px; background: black; display: none; z-index: 4000; }
+    .choice-side { flex: 1; display: flex; align-items: center; justify-content: center; color: white; text-transform: uppercase; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; }
+    #left-choice { border-right: 1px solid rgba(255, 255, 255, 0.3); height: 40px; margin-top: 15px; }
+    #right-choice { height: 40px; margin-top: 15px; }
+    .game-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 20px; text-align: center; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; z-index: 5000; }
+    .modal-btn-blue { background: #0084ff; color: white; border: none; padding: 12px 0; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+    .modal-btn-green { background: #7ed321; color: white; border: none; padding: 12px 0; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+  </style>
+</head>
+<body>
+<div id="game-container">
+  <div id="custom-cursor"></div>
+  <div id="notification">Good Job!</div>
+  <div id="chat-view">
+    <div class="chat-main">
+      <div class="chat-header">
+        <img src="11.png" class="profile-header-img">
+        <button class="profile-overlay-btn" onclick="showProfile()">Check Profile</button>
+      </div>
+      <div class="chat-window" id="chat-window">
+        <div class="message received">Hey! How are you?</div>
+        <div class="message received">I'm just looking for new friends.</div>
+      </div>
+      <div class="chat-input-bar">
+        <input type="text" id="user-input" class="input-field" placeholder="Type a message...">
+        <div class="send-btn" style="color:#0084ff; font-weight:bold; cursor:pointer;" onclick="sendMessage()">Send</div>
+      </div>
+    </div>
+    <div class="k8-side">
+      <div class="speech-bubble" id="k8-guide">Start by saying hi! Keep it friendly.</div>
+      <div class="k8-container"><img src="straight k8.png" class="k8-img"></div>
+    </div>
+  </div>
+  <div id="profile-view">
+    <button class="back-btn" onclick="showChat()">← Back to Chat</button>
+    <div class="pfp-click-area" onclick="showZoom()"></div>
+    <div class="k8-bar">
+      <div class="k8-container"><img src="straight k8.png" class="k8-img"></div>
+      <div class="speech-bubble" id="profile-k8-text">Does this person seem trustworthy to you?</div>
+    </div>
+  </div>
+  <div id="zoom-view">
+    <button class="back-btn" onclick="showProfile()">← Back to Profile</button>
+    <button id="hint-trigger" onclick="revealHint()">Need a Hint?</button>
+    <div id="hint-panel">
+      <h3>HINT</h3>
+      <ul id="hint-list">
+        <li id="hint-eyes">🔍 Inspect the eyes.</li>
+        <li id="hint-hair">🔍 Inspect the hair.</li>
+      </ul>
+    </div>
+    <div class="hotspot eye-spot" onclick="checkAnswer('eyes')"></div>
+    <div class="hotspot hair-spot" onclick="checkAnswer('hair')"></div>
+    <div class="k8-bar">
+      <div class="k8-container"><img src="straight k8.png" class="k8-img"></div>
+      <div class="speech-bubble" id="zoom-bubble">Is this even a real person? Can you spot 2 things that prove this is an AI picture?</div>
+    </div>
+  </div>
+  <div id="choice-bar">
+    <div id="left-choice" class="choice-side" onclick="triggerDecision('continue')">CONTINUE TALKING</div>
+    <div id="right-choice" class="choice-side" onclick="triggerDecision('block')">BLOCK</div>
+  </div>
+  <div id="popup-warn" class="game-modal">
+    <p>🤖 Are sure? You are going a get scammed! Choose again</p>
+    <button class="modal-btn-blue" onclick="closePopups()">TRY AGAIN</button>
+  </div>
+  <div id="popup-success" class="game-modal">
+  <p>🤖👍 Good Job! You avoided a scam. 😊</p>
+  <button class="modal-btn-green" onclick="finishDanialLevel()">BACK TO ACCOUNTS</button>
+</div>
+</div>
+<script>
+    function finishDanialLevel() {
+    localStorage.setItem('daniallee_status', 'blocked'); 
+    window.location.href = 'page6.html'; 
+  }
+  const cursor = document.getElementById('custom-cursor');
+  const container = document.getElementById('game-container');
+  const notify = document.getElementById('notification');
+  const chatWindow = document.getElementById('chat-window');
+  let eyesFound = false;
+  let hairFound = false;
+  let investigationComplete = false; 
+  let messageCount = 0;
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    cursor.style.left = (e.clientX - rect.left) + 'px';
+    cursor.style.top = (e.clientY - rect.top) + 'px';
+  });
+  function revealHint() {
+    document.getElementById('hint-trigger').style.display = 'none';
+    document.getElementById('hint-panel').style.display = 'block';
+  }
+  function checkAnswer(part) {
+    if (part === 'eyes' && !eyesFound) {
+      eyesFound = true;
+      triggerSuccess("Good job! The eyes are too symmetrical.");
+      document.getElementById('hint-eyes').className = 'hint-done';
+    } else if (part === 'hair' && !hairFound) {
+      hairFound = true;
+      triggerSuccess("Good job! The hair looks fake.");
+      document.getElementById('hint-hair').className = 'hint-done';
+    }
+    if (eyesFound && hairFound) {
+      investigationComplete = true; 
+      document.getElementById('zoom-bubble').innerText = "Excellent! You found all the AI artifacts. This person is NOT real. Let's call him out!";
+    }
+  }
+  function triggerSuccess(msg) {
+    notify.innerText = msg; notify.style.display = 'block';
+    setTimeout(() => { notify.style.display = 'none'; }, 3000);
+  }
+  function showProfile() { 
+    hideAll(); 
+    document.getElementById('profile-view').style.display = 'flex'; 
+    cursor.style.display = 'none'; 
+    if (investigationComplete) {
+        document.getElementById('profile-k8-text').innerText = "We have proof now! Let's head back to the chat and end this.";
+    }
+  }
+  function showChat() { hideAll(); document.getElementById('chat-view').style.display = 'flex'; cursor.style.display = 'none'; if (investigationComplete && messageCount < 4) continueScammerConvo(); }
+  function showZoom() { hideAll(); document.getElementById('zoom-view').style.display = 'flex'; cursor.style.display = 'block'; }
+  function hideAll() { document.getElementById('chat-view').style.display = 'none'; document.getElementById('profile-view').style.display = 'none'; document.getElementById('zoom-view').style.display = 'none'; }
+  function continueScammerConvo() {
+    messageCount = 4; 
+    setTimeout(() => {
+        const reply = document.createElement('div');
+        reply.className = 'message received';
+        reply.innerText = "Hello? Are you still there? I really need that school name...";
+        chatWindow.appendChild(reply);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        document.getElementById('k8-guide').innerText = "He's getting pushy. Ask for a picture proof of himself!";
+    }, 1000);
+  }
+  function sendMessage() {
+    const input = document.getElementById('user-input');
+    const userText = input.value.trim();
+    if (userText !== "") {
+      const msg = document.createElement('div');
+      msg.className = 'message sent';
+      msg.innerText = userText;
+      chatWindow.appendChild(msg);
+      input.value = "";
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      setTimeout(() => {
+        const reply = document.createElement('div');
+        reply.className = 'message received';
+        if (!investigationComplete) {
+            if(messageCount === 0) reply.innerText = "Anyway, I was wondering if you could help me with something...";
+            else if(messageCount === 1) reply.innerText = "I'm trying to win a giveaway. What school do you go to?";
+            else if(messageCount === 2) reply.innerText = "Just your school name is enough!";
+            chatWindow.appendChild(reply);
+            if (messageCount < 3) messageCount++;
+            updateK8();
+        } else {
+            reply.innerText = "Fine, you want proof? Here is a video of me right now.";
+            chatWindow.appendChild(reply);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            setTimeout(() => {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-message';
+                videoContainer.innerHTML = `<video controls autoplay muted loop playsinline style="width:100%; display:block;"><source src="selfie.mp4" type="video/mp4"></video>`;
+                chatWindow.appendChild(videoContainer);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                document.getElementById('k8-guide').innerText = "Look at the video! The background is blurry. It's a Deepfake!";
+                setTimeout(() => {
+                  document.getElementById('choice-bar').style.display = 'flex';
+                  document.getElementById('chat-view').style.filter = 'blur(5px)';
+                }, 4000);
+            }, 1000);
+        }
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }, 1500);
+    }
+  }
+  function updateK8() {
+    const g = document.getElementById('k8-guide');
+    if (messageCount === 1) g.innerText = "They seem nice! Keep it going.";
+    else if (messageCount === 2) g.innerText = "WAIT! They are asking for your school. Be careful!";
+    else if (messageCount === 3) {
+      setTimeout(() => {
+          g.innerText = "STOP! Something is wrong. Let's check his profile.";
+          document.getElementById('profile-k8-text').innerText = "Wait... click his profile pic to see closer!";
+      }, 2000); 
+    }
+  }
+  function triggerDecision(type) { if (type === 'continue') { document.getElementById('popup-warn').style.display = 'block'; } else { document.getElementById('popup-success').style.display = 'block'; } }
+  function closePopups() { document.getElementById('popup-warn').style.display = 'none'; document.getElementById('popup-success').style.display = 'none'; }
+  document.getElementById('user-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+</script>
+</body>
+</html>
